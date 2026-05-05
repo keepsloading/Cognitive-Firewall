@@ -16,12 +16,13 @@ function setBadge(text, color, tabId) {
   if (!tabId) return;
   chrome.tabs.get(tabId, (tab) => {
     if (chrome.runtime.lastError || !tab) return;
-    if (!Number.isFinite(Number(text))) {
+    const score = Number(text);
+    if (!Number.isFinite(score)) {
       chrome.action.setBadgeText({ text: '', tabId });
       return;
     }
     chrome.action.setBadgeBackgroundColor({ color, tabId });
-    chrome.action.setBadgeText({ text: String(text), tabId });
+    chrome.action.setBadgeText({ text: String(score), tabId });
   });
 }
 
@@ -59,14 +60,22 @@ async function processQueue() {
     const cached = items[cacheKey];
     if (cached && cached.engine_version === ENGINE_VERSION && (Date.now() - cached.cached_at) < CACHE_TTL_MS) {
       const result = { ...cached, request_id: requestId };
-      setBadge(result.rustmeter_score, getColor(result.rustmeter_score), tabId);
+      if (Number.isFinite(Number(result.rustmeter_score))) {
+        setBadge(result.rustmeter_score, getColor(Number(result.rustmeter_score)), tabId);
+      } else {
+        setBadge('', '#9ca3af', tabId);
+      }
       sendResponse(result);
       isProcessing = false; processQueue(); return;
     }
 
     const result = scoreContent({ ...content, site_name: content.site_name || formatHost(content.host) }, requestId);
     chrome.storage.local.set({ [cacheKey]: { ...result, cached_at: Date.now() } }, () => {
-      setBadge(result.rustmeter_score, getColor(result.rustmeter_score), tabId);
+      if (Number.isFinite(Number(result.rustmeter_score))) {
+        setBadge(result.rustmeter_score, getColor(Number(result.rustmeter_score)), tabId);
+      } else {
+        setBadge('', '#9ca3af', tabId);
+      }
       sendResponse(result);
       isProcessing = false; processQueue();
     });

@@ -47,9 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return 'Boundier cannot analyze browser, extension, or store pages. Open a normal webpage and try again.';
     }
 
-    if (/media articles only/i.test(message || '')) {
-      return 'This page is not a supported media page yet. Open a news article or video page and try again.';
-    }
 
     return message || 'Analysis failed.';
   }
@@ -103,8 +100,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      if (!response.result) {
-        callback(new Error('No analysis result yet. Click reload after the page finishes loading.'));
+
+      const score = Number(response.result?.rustmeter_score);
+      if (!Number.isFinite(score)) {
+        callback(new Error('Boundier could not extract enough readable page content.'));
         return;
       }
 
