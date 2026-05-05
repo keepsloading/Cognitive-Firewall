@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Boundier Rustmeter",
-  "version": "1.0",
+  "name": "Boundier",
+  "version": "2.0",
   "description": "Local-first propaganda and influence analysis with Rustmeter scoring.",
   "icons": {
     "16": "icons/16.png",

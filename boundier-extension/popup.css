@@ -1,10 +1,8 @@
 * { box-sizing: border-box; }
-body { width: 640px; min-height: 520px; margin: 0; padding: 16px; font-family: 'Cooper Hewitt', Arial, sans-serif; color: #1f2933; background: #f8fafc; }
+body { width: 640px; min-height: 520px; margin: 0; padding: 16px; font-family: Inter, 'Segoe UI', Arial, sans-serif; color: #1f2933; background: #f8fafc; }
 header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
 .brand { display:flex; gap:10px; align-items:center; }
-.brand img { width:44px; }
-.brand h1 { margin:0; font-size:20px; }
-.brand p { margin:0; color:#667085; font-size:12px; }
+.brand img { width:180px; max-width:100%; height:auto; object-fit:contain; }
 #reload-btn { width:36px; height:36px; border:0; border-radius:50%; color:#fff; background:#004aad; cursor:pointer; }
 #reload-btn svg { width:20px; fill:currentColor; }
 #score-container { text-align:center; background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:14px; margin-bottom:14px; }
@@ -25,3 +23,15 @@ section { margin-top:16px; }
 ul { margin:0; padding:0; list-style:none; }
 #phrases li,#explanations li { margin-bottom:8px; padding:10px; border:1px solid #e5e7eb; border-radius:8px; background:#fff; }
 .error { color:#dc2626; text-align:center; }
+
+
+
+.rustmeter-icon { position: relative; display:inline-flex; width:16px; height:16px; margin-right:6px; vertical-align:middle; align-items:center; justify-content:center; }
+.rustmeter-icon::before { content:''; position:absolute; inset:0; border-radius:50%; border:2px solid #9ca3af; }
+.rustmeter-core { width:6px; height:6px; border-radius:2px; background:#9ca3af; transform:rotate(45deg); }
+#rustmeter-symbol.low::before { border-color:#22c55e; }
+#rustmeter-symbol.low .rustmeter-core { background:#22c55e; }
+#rustmeter-symbol.moderate::before { border-color:#f59e0b; }
+#rustmeter-symbol.moderate .rustmeter-core { background:#f59e0b; }
+#rustmeter-symbol.high::before { border-color:#ef4444; }
+#rustmeter-symbol.high .rustmeter-core { background:#ef4444; }
