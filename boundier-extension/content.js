@@ -180,7 +180,7 @@ function getVisibleBodyText(limit = 700) {
       if (text.length < 24) return NodeFilter.FILTER_REJECT;
 
       const style = window.getComputedStyle(parent);
-      if (style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0) {
+      if (style.display === 'none' || style.visibility === 'hidden') {
         return NodeFilter.FILTER_REJECT;
       }
 
@@ -198,7 +198,17 @@ function getVisibleBodyText(limit = 700) {
     }
   }
 
-  return truncateWords(chunks.join(' '), limit);
+  const treeWalkerText = truncateWords(chunks.join(' '), limit);
+  if (treeWalkerText.length >= 40) {
+    return treeWalkerText;
+  }
+
+  const bodyInnerText = truncateWords(cleanText(document.body.innerText || ''), limit);
+  if (bodyInnerText.length >= treeWalkerText.length) {
+    return bodyInnerText;
+  }
+
+  return treeWalkerText;
 }
 
 function isSupportedSurface(surface) {
