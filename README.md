@@ -154,5 +154,4 @@ python -m pytest backend/tests/test_scoring.py
 
 Boundier is open source under the MIT License.
 
-```
 
