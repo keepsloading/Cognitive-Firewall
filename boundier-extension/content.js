@@ -163,7 +163,7 @@ function getGenericText() {
 
 
 function isSupportedSurface(surface) {
-  return surface === 'article' || surface === 'video';
+  return ['article', 'video', 'social', 'page'].includes(surface);
 }
 
 function getFastSnippetLimit(surface) {
@@ -242,11 +242,11 @@ async function buildPayload(full = false) {
   const content = extractContent(full);
 
   if (!isSupportedSurface(content.surface)) {
-    return { error: 'Boundier currently analyzes media articles only.' };
+    return { error: 'Boundier could not extract enough readable page content.' };
   }
 
   if (!hasEnoughContent(content, full)) {
-    return { error: 'not enough content' };
+    return { error: 'Boundier could not extract enough readable page content.' };
   }
 
   const hash = await getHash(content);
