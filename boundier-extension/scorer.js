@@ -27,6 +27,39 @@
   function clamp(v,min=0,max=100){return Math.max(min,Math.min(max,v));}
   function tokenize(t){return cleanText(t).match(/\b[\w'-]+\b/g)||[];}
   function toTitle(k){return k.split('_').map(x=>x[0].toUpperCase()+x.slice(1)).join(' ');}
+  function humanCategory(category){return toTitle(category||'');}
+  function formatSignal(signal){return signal?`"${signal}"`:'this pattern';}
+  function buildEvidenceExplanations(rustScore,tactics,topSignals,categoryScores,surface,wordCount){
+    const level=rustScore>=66?'High':rustScore>=36?'Moderate':'Low';
+    const cleanTop=(topSignals||[]).filter(s=>s&&s.signal!=='No strong influence signal found'&&s.category!=='baseline');
+    const topCategories=Object.entries(categoryScores||{}).filter(([,v])=>v>=28).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k])=>humanCategory(k));
+    const lines=[];
+    if(level==='Low'){
+      lines.push(`Low Rustmeter pressure: few high-confidence influence-pressure signals were detected across ${wordCount.toLocaleString()} analyzed words.`);
+      if(cleanTop.length){
+        const t=cleanTop[0];
+        lines.push(`Detected mild ${humanCategory(t.category)} signal ${formatSignal(t.signal)} in the ${t.location}; ${t.reason.toLowerCase()} This raised the score but did not dominate it.`);
+      } else {
+        lines.push('No strong influence-pressure trigger stood out, so the score remained low-evidence overall.');
+      }
+      const absent=[['outrage_amplification','Outrage Amplification'],['enemy_construction','Enemy Construction'],['polarization','Polarization'],['source_obscurity','Source Obscurity']].filter(([k])=>(categoryScores[k]||0)<28).map(([,l])=>l);
+      if(absent.length){
+        lines.push(`No strong ${absent.join(', ')} signals were detected.`);
+      }
+    } else {
+      lines.push(`${level} Rustmeter pressure: strongest detected categories were ${topCategories.length?topCategories.join(', '):'influence-pressure patterns across multiple categories'}.`);
+      for(const t of cleanTop.slice(0,3)){
+        lines.push(`Detected ${formatSignal(t.signal)} as ${humanCategory(t.category)} in the ${t.location}: ${t.reason}`);
+      }
+      if(!cleanTop.length){
+        lines.push('Multiple weaker cues combined to raise the score even without one dominant trigger phrase.');
+      }
+    }
+    if(lines.length<3){
+      lines.push(`Evidence was derived from visible ${surface||'page'} text only, with deterministic local scoring.`);
+    }
+    return lines.slice(0,5);
+  }
   function scoreContent(content,requestId=''){
     const headline=cleanText(content.headline); const body=cleanText([content.byline,content.snippet].filter(Boolean).join(' ')); const all=cleanText([headline,body].join(' '));
     const scores=Object.fromEntries(CATEGORY_KEYS.map(k=>[k,0])); const evidence=[];
@@ -45,7 +78,7 @@
     const top=(sorted.slice(0,5).map(({signal,reason,category,location})=>({signal,reason,category,location})));
     const tactics=Object.entries(norm).filter(([,v])=>v>=28).sort((a,b)=>b[1]-a[1]).map(([k])=>k);
     const unc=clamp(18-Math.min(10,sorted.length*2)+(wc<40?5:0),6,22);
-    return {rustmeter_score:rust,attention_score:attention,emotion_score:emotion,framing_score:framing,source_score:source,confidence_interval:`${clamp(rust-unc)}-${clamp(rust+unc)}`,top_signals:top.length?top:[{signal:'No strong influence signal found',reason:'The local scorer did not find enough high-confidence signals.',category:'baseline',location:'style'}],category_scores:norm,tactics,content_type:content.surface||'page',site_name:content.site_name||'This page',page_title:content.page_title||headline||'',host:content.host||'',word_count:wc,source:'local_rules',engine_version:ENGINE_VERSION,request_id:requestId,explanations:[`${rust>=66?'High':rust>=36?'Moderate':'Low'} Rustmeter influence pressure based on local scoring of ${content.surface||'page'} content.`,`Primary signals: ${tactics.length?tactics.slice(0,3).map(toTitle).join(', '):'few clear pressure tactics'}.`,`Analyzed ${wc} words locally.`]};
+    return {rustmeter_score:rust,attention_score:attention,emotion_score:emotion,framing_score:framing,source_score:source,confidence_interval:`${clamp(rust-unc)}-${clamp(rust+unc)}`,top_signals:top.length?top:[{signal:'No strong influence signal found',reason:'The local scorer did not find enough high-confidence signals.',category:'baseline',location:'style'}],category_scores:norm,tactics,content_type:content.surface||'page',site_name:content.site_name||'This page',page_title:content.page_title||headline||'',host:content.host||'',word_count:wc,source:'local_rules',engine_version:ENGINE_VERSION,request_id:requestId,explanations:buildEvidenceExplanations(rust,tactics,top,norm,content.surface||'page',wc)};
   }
   return {ENGINE_VERSION,SIGNALS,CATEGORY_KEYS,scoreContent,toTitle};
 }));

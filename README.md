@@ -2,7 +2,14 @@
 
 Boundier is a local-first influence-pressure analysis tool for webpages, social feeds, and video page metadata.
 
-It analyzes language-pattern signals with deterministic Rustmeter scoring and provides transparent signal-level explanations.
+It analyzes visible language patterns with deterministic Rustmeter scoring and provides evidence-linked signal explanations.
+
+
+## Evidence model
+
+Boundier does not only show a score. It surfaces the signals that contributed to the score, including the detected phrase or pattern, the category it affected, and a short reason.
+
+The “Why” section explains the main evidence behind the Rustmeter score. For low scores, it may also explain which stronger pressure signals were not detected. A low score means the page may contain a few mild cues, but not enough evidence for high influence pressure.
 
 ## What Boundier does
 

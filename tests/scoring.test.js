@@ -23,3 +23,19 @@ test('eval fixtures are within ranges', () => {
     assert.ok(r.rustmeter_score >= c.expect.min && r.rustmeter_score <= c.expect.max, `${c.name}: ${r.rustmeter_score}`);
   }
 });
+
+
+test('explanations are non-empty and evidence-linked when signals are present', () => {
+  const result = scoreContent({ headline: "Last chance: corrupt elites exposed", snippet: 'Act now before it is too late. Share this if you care.', surface: 'page' }, 'exp1');
+  assert.ok(Array.isArray(result.explanations));
+  assert.ok(result.explanations.length >= 3);
+  assert.ok(result.explanations.some((line) => /Detected|detected/.test(line)), result.explanations.join(' | '));
+  assert.ok(result.explanations.some((line) => /words/.test(line)), result.explanations.join(' | '));
+});
+
+test('low-score neutral content does not claim strong signals', () => {
+  const result = scoreContent({ headline: 'City transit update', snippet: 'The committee published the weekly maintenance summary and schedule.', surface: 'page' }, 'exp2');
+  assert.ok(result.explanations.length >= 3);
+  assert.ok(result.explanations.every((line) => !/This is propaganda|misinformation|author intended/i.test(line)));
+  assert.ok(result.explanations.some((line) => /No strong|few high-confidence|low-evidence/i.test(line)), result.explanations.join(' | '));
+});
