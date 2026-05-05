@@ -11,9 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function riskLabel(score) {
-    if (score <= 35) return 'Low pressure';
-    if (score <= 65) return 'Moderate pressure';
-    return 'High pressure';
+    if (score <= 35) return 'Low Rust';
+    if (score <= 65) return 'Moderate Rust';
+    return 'High Rust';
   }
 
   function setText(id, value) {
@@ -108,15 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
     clearNode(container);
 
     const preferredOrder = [
-      'clickbait',
-      'urgency',
-      'fear',
-      'outrage',
-      'polarization',
-      'manipulation',
-      'certainty',
-      'credibility',
-      'attention'
+      'attention_capture','clickbait','emotional_pressure','fear_appeal','outrage_amplification','false_urgency','loaded_language','enemy_construction','polarization','certainty_inflation','source_obscurity','social_proof_pressure','engagement_bait','call_to_action_pressure'
     ];
 
     preferredOrder.forEach((key) => {
@@ -127,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const label = document.createElement('span');
       label.className = 'bar-label';
-      label.textContent = key.replace('-', ' ');
+      label.textContent = key.split('_').map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
 
       const track = document.createElement('div');
       track.className = 'bar-track';
@@ -149,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function renderPhrases(items = []) {
+  function renderSignals(items = []) {
     const list = document.querySelector('#phrases ul');
     clearNode(list);
 
@@ -161,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const phrase = document.createElement('div');
       phrase.className = 'phrase';
-      phrase.textContent = item.phrase || 'Signal';
+      phrase.textContent = item.signal || item.phrase || 'Signal';
 
       const category = document.createElement('span');
       category.className = 'category-tag';
@@ -191,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderResult(result) {
-    const score = Number(result.aim_score || 0);
+    const score = Number(result.rustmeter_score ?? 0);
     const color = scoreColor(score);
     const pageLabel = result.site_name || result.page_title || result.host || result.content_type || 'This page';
 
@@ -199,13 +191,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('score').style.backgroundColor = color;
     setText('status', riskLabel(score));
     setText('meta', pageLabel);
-    setText('clickbait-score', result.clickbait_score ?? 0);
-    setText('manipulation-score', result.manipulation_score ?? 0);
-    setText('affect-score', result.affect_score ?? 0);
-    setText('intent-score', result.intent_score ?? 0);
+    setText('attention-score', result.attention_score ?? 0);
+    setText('emotion-score', result.emotion_score ?? 0);
+    setText('framing-score', result.framing_score ?? 0);
+    setText('source-score', result.source_score ?? 0);
 
     renderCategoryBars(result.category_scores || {});
-    renderPhrases(result.top_phrases || []);
+    renderSignals(result.top_signals || []);
     renderExplanations(result.explanations || []);
   }
 

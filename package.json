@@ -1,0 +1,1 @@
+{"name":"boundier","private":true,"scripts":{"test":"node --test tests/scoring.test.js"}}

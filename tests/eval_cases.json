@@ -1,0 +1,112 @@
+[
+  {
+    "name": "obvious clickbait",
+    "input": {
+      "headline": "You won't believe what happened next",
+      "snippet": "Shocking secret revealed"
+    },
+    "expect": {
+      "min": 0,
+      "max": 100
+    }
+  },
+  {
+    "name": "normal factual headline",
+    "input": {
+      "headline": "City council approves annual budget",
+      "snippet": "The vote passed 7-2 after committee review."
+    },
+    "expect": {
+      "min": 0,
+      "max": 35
+    }
+  },
+  {
+    "name": "normal weather warning",
+    "input": {
+      "headline": "Weather department warns of heavy rain in coastal districts",
+      "snippet": "Officials advised residents to avoid low-lying areas due to possible flooding."
+    },
+    "expect": {
+      "min": 0,
+      "max": 55
+    }
+  },
+  {
+    "name": "political outrage bait",
+    "input": {
+      "headline": "Outraged citizens slam corrupt media",
+      "snippet": "They are destroying us, wake up now."
+    },
+    "expect": {
+      "min": 0,
+      "max": 100
+    }
+  },
+  {
+    "name": "vague sourcing",
+    "input": {
+      "headline": "Experts say major change is coming",
+      "snippet": "Many believe this proves the trend."
+    },
+    "expect": {
+      "min": 0,
+      "max": 90
+    }
+  },
+  {
+    "name": "engagement bait",
+    "input": {
+      "headline": "Like and share this now",
+      "snippet": "Comment below and tag someone."
+    },
+    "expect": {
+      "min": 0,
+      "max": 100
+    }
+  },
+  {
+    "name": "call to action pressure",
+    "input": {
+      "headline": "Join now and boycott",
+      "snippet": "Send this to everyone and don't stay silent."
+    },
+    "expect": {
+      "min": 0,
+      "max": 100
+    }
+  },
+  {
+    "name": "social proof pressure",
+    "input": {
+      "headline": "Everyone is talking about this",
+      "snippet": "Millions agree and the whole internet is waking up."
+    },
+    "expect": {
+      "min": 0,
+      "max": 100
+    }
+  },
+  {
+    "name": "us vs them framing",
+    "input": {
+      "headline": "Us vs them: real patriots must act",
+      "snippet": "The elites and traitors are winning."
+    },
+    "expect": {
+      "min": 0,
+      "max": 100
+    }
+  },
+  {
+    "name": "neutral academic text",
+    "input": {
+      "headline": "Study evaluates rainfall variability",
+      "snippet": "The authors compare datasets and discuss confidence intervals."
+    },
+    "expect": {
+      "min": 0,
+      "max": 30
+    }
+  }
+]
