@@ -161,6 +161,11 @@ function getGenericText() {
   return truncateWords([metaDescription, pageText].filter(Boolean).join(' '), 500);
 }
 
+
+function isSupportedSurface(surface) {
+  return surface === 'article' || surface === 'video';
+}
+
 function getFastSnippetLimit(surface) {
   if (surface === 'article') return 360;
   if (surface === 'video') return 180;
@@ -235,6 +240,10 @@ function hasEnoughContent(content, forceFull = false) {
 
 async function buildPayload(full = false) {
   const content = extractContent(full);
+
+  if (!isSupportedSurface(content.surface)) {
+    return { error: 'Boundier currently analyzes media articles only.' };
+  }
 
   if (!hasEnoughContent(content, full)) {
     return { error: 'not enough content' };
