@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function clearNode(node) {
+    if (!node) return;
     while (node.firstChild) {
       node.removeChild(node.firstChild);
     }
@@ -46,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (/cannot access|chrome:|edge:|extension|webstore|permissions/i.test(message || '')) {
       return 'Boundier cannot analyze browser, extension, or store pages. Open a normal webpage and try again.';
     }
-
 
     return message || 'Analysis failed.';
   }
@@ -73,13 +73,24 @@ document.addEventListener('DOMContentLoaded', () => {
     );
   }
 
+  function normalizeAnalysisResponse(response) {
+    if (!response) return null;
+
+    // Older/newer flows may return either:
+    // 1. { result: { rustmeter_score: ... } }
+    // 2. { rustmeter_score: ... }
+    return response.result || response;
+  }
+
   function requestAnalysis(tab, clearCache, didInject, callback) {
     console.log('Boundier popup sending get_analysis to tab', tab.id);
+
     chrome.tabs.sendMessage(tab.id, { action: 'get_analysis', clearCache }, (response) => {
-      console.log('Boundier popup lastError', chrome.runtime.lastError?.message);
-      console.log('Boundier popup response', response);
       const lastError = chrome.runtime.lastError;
       const message = lastError?.message || '';
+
+      console.log('Boundier popup lastError', message || undefined);
+      console.log('Boundier popup response', response);
 
       if (lastError) {
         if (!didInject && /receiving end does not exist|could not establish connection/i.test(message)) {
@@ -107,17 +118,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (response.debug) {
           console.warn('Boundier popup extraction/debug:', response.debug);
         }
+
         callback(new Error(friendlyTabError(response.error)));
         return;
       }
 
-      const score = Number(response.result?.rustmeter_score);
+      const result = normalizeAnalysisResponse(response);
+      const score = Number(result?.rustmeter_score);
+
       if (!Number.isFinite(score)) {
-        callback(new Error('Boundier could not extract enough readable page content.'));
+        console.warn('Boundier popup received invalid analysis result:', response);
+        callback(new Error('Boundier received an invalid Rustmeter result.'));
         return;
       }
 
-      callback(null, response.result);
+      callback(null, result);
     });
   }
 
@@ -126,7 +141,20 @@ document.addEventListener('DOMContentLoaded', () => {
     clearNode(container);
 
     const preferredOrder = [
-      'attention_capture','clickbait','emotional_pressure','fear_appeal','outrage_amplification','false_urgency','loaded_language','enemy_construction','polarization','certainty_inflation','source_obscurity','social_proof_pressure','engagement_bait','call_to_action_pressure'
+      'attention_capture',
+      'clickbait',
+      'emotional_pressure',
+      'fear_appeal',
+      'outrage_amplification',
+      'false_urgency',
+      'loaded_language',
+      'enemy_construction',
+      'polarization',
+      'certainty_inflation',
+      'source_obscurity',
+      'social_proof_pressure',
+      'engagement_bait',
+      'call_to_action_pressure'
     ];
 
     preferredOrder.forEach((key) => {
@@ -137,7 +165,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const label = document.createElement('span');
       label.className = 'bar-label';
-      label.textContent = key.split('_').map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+      label.textContent = key
+        .split('_')
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(' ');
 
       const track = document.createElement('div');
       track.className = 'bar-track';
@@ -205,11 +236,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const color = scoreColor(score);
     const pageLabel = result?.site_name || result?.page_title || result?.host || result?.content_type || 'This page';
 
-    document.getElementById('score').textContent = score;
+    const scoreNode = document.getElementById('score');
+    if (scoreNode) {
+      scoreNode.textContent = score;
+      scoreNode.style.backgroundColor = color;
+    }
+
     const symbol = document.getElementById('rustmeter-symbol');
-    symbol.className = '';
-    symbol.classList.add(score <= 35 ? 'low' : score <= 65 ? 'moderate' : 'high');
-    document.getElementById('score').style.backgroundColor = color;
+    if (symbol) {
+      // Preserve the base CSS class. The old code wiped it with className = '',
+      // which broke the Rustmeter icon styling.
+      symbol.className = 'rustmeter-icon';
+      symbol.classList.add(score <= 35 ? 'low' : score <= 65 ? 'moderate' : 'high');
+    }
+
     setText('status', riskLabel(score));
     setText('meta', pageLabel);
     setText('attention-score', result?.attention_score ?? 0);
@@ -241,6 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
+        error.style.display = 'none';
         content.style.display = 'block';
         renderResult(result);
       });
