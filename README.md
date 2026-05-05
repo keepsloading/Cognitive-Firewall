@@ -6,20 +6,62 @@ It analyzes language patterns with a deterministic scoring system and reports a 
 
 ## Project Note
 
-Boundier began as a Gen AI TechGyan hackathon project at IIT Bombay, built in under 30 minutes in March 2025, where it won first prize. I added it to GitHub later because I was not on GitHub during that period; this repository includes the original project with cleanup and scoring improvements.
+Boundier began as a Gen AI TechGyan hackathon project at IIT Bombay, built in under 30 minutes in March 2025, where it won first position.
+
+The original hackathon version was built under intense time pressure. It focused on detecting clickbait, emotional pressure, and manipulative framing using an early AIM-style scoring idea. That version proved the core concept: a browser extension could scan page language locally and surface influence-pressure signals to the user.
+
+This repository now contains the updated version of Boundier. The project has been refactored from a hackathon prototype into a cleaner local-first Rustmeter-based analysis system with clearer categories, stronger privacy boundaries, signal-level explanations, and automated tests.
+
+## Old Boundier vs New Boundier
+
+### Old Boundier
+
+The original Boundier was a fast hackathon build.
+
+It focused on:
+
+- Detecting clickbait and emotionally manipulative phrasing
+- Producing an AIM-style score
+- Showing triggered phrases in a browser popup
+- Using broad categories like clickbait, urgency, fear, outrage, manipulation, credibility, and attention
+- Proving the core idea quickly under hackathon constraints
+
+Old Boundier was useful as a proof of concept, but its framing was too broad. “Manipulation detector” can sound binary or judgment-heavy, and the AIM-style categories were less precise than the current system.
+
+### New Boundier
+
+The updated Boundier uses **Rustmeter**.
+
+It focuses on:
+
+- Measuring propaganda-like influence pressure
+- Reporting a Rustmeter score instead of an AIM score
+- Grouping signals into Attention, Emotion, Framing, and Source pressure
+- Showing signal-level evidence and reasoning
+- Keeping primary analysis local-first inside the extension
+- Treating scores as heuristic analysis signals, not verdicts
+- Making backend history/training export opt-in only
+
+New Boundier does not ask, “Is this content manipulative?”
+
+It asks:
+
+> How is this content applying influence pressure?
+
+That makes the system more precise, more transparent, and more defensible.
 
 ## What Boundier does
 
 - Scores influence-pressure signals locally in the extension by default
 - Surfaces Rustmeter score, subscores, and signal evidence for each page
-- Highlights propaganda-style framing patterns (attention, emotion, framing, and source pressure)
+- Highlights propaganda-style framing patterns across attention, emotion, framing, and source pressure
 - Works across articles, social pages, video pages, and generic webpages
 - Keeps backend optional for local experiments
 
 ## What Boundier does not do
 
 - It does **not** determine objective truth.
-- It does **not** label content as misinformation/disinformation.
+- It does **not** label content as misinformation or disinformation.
 - It does **not** infer or prove author intent.
 - It does **not** replace source verification, media literacy, or editorial judgment.
 
@@ -64,7 +106,8 @@ Rustmeter measures propaganda-like influence patterns in text, including:
 - Primary scoring runs in the extension background worker.
 - No hosted AI service is required.
 - Backend is optional and intended for localhost use.
-- Backend analysis cache is local. Training/history export is opt-in only.
+- Backend analysis cache is local.
+- Training/history export is opt-in only.
 
 ## Known limitations
 
@@ -73,6 +116,7 @@ Rustmeter measures propaganda-like influence patterns in text, including:
 - Scores may vary by page text extraction quality.
 - Short snippets can create higher uncertainty.
 - The model measures influence-like patterns, not factual correctness.
+- Video-page support currently analyzes available page text and metadata, not full video/audio content.
 
 ## Extension Setup
 
@@ -88,4 +132,27 @@ Rustmeter measures propaganda-like influence patterns in text, including:
 cd backend
 pip install -r requirements.txt
 python app.py
+````
+
+The backend is optional and intended for local experimentation. The extension runs primary Rustmeter scoring locally without requiring a hosted AI API.
+
+## Testing
+
+Run JavaScript scorer tests:
+
+```bash
+npm test
 ```
+
+Run backend tests:
+
+```bash
+python -m pytest backend/tests/test_scoring.py
+```
+
+## License
+
+Boundier is open source under the MIT License.
+
+```
+
