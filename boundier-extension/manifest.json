@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Boundier",
+  "name": "Cognitive Firewall",
   "version": "2.0",
   "description": "Local-first influence-pressure analysis with Rustmeter scoring.",
   "icons": {
