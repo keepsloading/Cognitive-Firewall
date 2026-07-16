@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Nudgement",
+  "version": "1.0",
+  "description": "See how your online content is nudging your attention and worldview over time.",
+  "icons": {
+    "16": "icons/16.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "Readability.js",
+        "extractor.js",
+        "content.js"
+      ]
+    }
+  ]
+}

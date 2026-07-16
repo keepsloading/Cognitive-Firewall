@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Nudgement</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="logo-mark">N</div>
+      <span class="brand-name">Nudgement</span>
+    </div>
+    <button id="reload-btn" title="Re-analyse this page" aria-label="Re-analyse">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="23 4 23 10 17 10"></polyline>
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+      </svg>
+    </button>
+  </header>
+
+  <!-- Loading -->
+  <div id="loading">
+    <div class="spinner"></div>
+    <p>Reading the page…</p>
+  </div>
+
+  <!-- Error -->
+  <div id="error-state" hidden>
+    <div class="error-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+    </div>
+    <p id="error-msg"></p>
+    <p class="error-hint">Nudgement works on regular web pages — try a news site, YouTube, or Reddit.</p>
+  </div>
+
+  <!-- Main content -->
+  <main id="content" hidden>
+
+    <!-- Page info bar -->
+    <div class="page-bar">
+      <span class="page-surface" id="page-surface"></span>
+      <span class="page-name" id="page-name"></span>
+    </div>
+
+    <!-- Nudgemeter: current page dimensions -->
+    <section class="card" id="nudgemeter-section">
+      <div class="card-header">
+        <span class="section-label">NUDGEMETER</span>
+        <span class="section-sub" id="nudgemeter-score-label"></span>
+      </div>
+      <div id="dimension-bars"></div>
+      <p class="nudge-summary" id="nudge-summary"></p>
+    </section>
+
+    <!-- 7-day diet -->
+    <section class="card" id="history-section">
+      <div class="card-header">
+        <span class="section-label">YOUR PAST 7 DAYS</span>
+        <span class="section-sub" id="history-count"></span>
+      </div>
+      <div class="day-dots" id="day-dots"></div>
+      <p class="history-summary" id="history-summary"></p>
+    </section>
+
+    <!-- What nudged you -->
+    <section class="card" id="signals-section">
+      <div class="card-header">
+        <span class="section-label">WHAT NUDGED YOU</span>
+      </div>
+      <div id="signal-list"></div>
+      <div class="explanations" id="explanations"></div>
+    </section>
+
+  </main>
+
+  <script src="popup.js"></script>
+</body>
+</html>

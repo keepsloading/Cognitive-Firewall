@@ -5,10 +5,7 @@
       "headline": "City council approves annual budget",
       "snippet": "The vote passed 7-2 after committee review and published minutes."
     },
-    "expect": {
-      "min": 0,
-      "max": 12
-    }
+    "expect": { "nudgemeter_score": { "min": 0, "max": 12 } }
   },
   {
     "name": "normal weather warning",
@@ -16,10 +13,7 @@
       "headline": "Weather department warns of heavy rain in coastal districts",
       "snippet": "Officials advised residents to avoid low-lying areas due to possible flooding."
     },
-    "expect": {
-      "min": 0,
-      "max": 15
-    }
+    "expect": { "nudgemeter_score": { "min": 0, "max": 15 } }
   },
   {
     "name": "obvious clickbait",
@@ -28,75 +22,134 @@
       "snippet": "Shocking secret revealed, click now."
     },
     "expect": {
-      "min": 12,
-      "max": 40
+      "nudgemeter_score": { "min": 12, "max": 40 },
+      "nudge_profile": { "entertainment": { "min": 10 } }
     }
   },
   {
-    "name": "political outrage bait",
+    "name": "political outrage",
     "input": {
-      "headline": "Outraged citizens slam corrupt media",
-      "snippet": "They are destroying us, wake up now."
+      "headline": "Outraged citizens slam corrupt media over election scandal",
+      "snippet": "They are destroying us, wake up now. The elites don't want you to know this."
     },
     "expect": {
-      "min": 18,
-      "max": 45
+      "nudgemeter_score": { "min": 18, "max": 55 },
+      "nudge_profile": {
+        "outrage":  { "min": 15 },
+        "politics": { "min": 10 }
+      }
     }
   },
   {
-    "name": "vague sourcing",
+    "name": "health fear appeal",
+    "input": {
+      "headline": "Deadly new virus spreading fast, experts say danger is real",
+      "snippet": "Many believe this could cause a global catastrophe. Warning: symptoms may be invisible."
+    },
+    "expect": {
+      "nudgemeter_score": { "min": 15, "max": 55 },
+      "nudge_profile": {
+        "health": { "min": 15 },
+        "outrage": { "min": 5 }
+      }
+    }
+  },
+  {
+    "name": "finance urgency",
+    "input": {
+      "headline": "Act now before the market collapses — last chance to invest",
+      "snippet": "Experts say inflation will destroy your savings. No doubt this is guaranteed to happen."
+    },
+    "expect": {
+      "nudgemeter_score": { "min": 15, "max": 55 },
+      "nudge_profile": {
+        "finance": { "min": 15 }
+      }
+    }
+  },
+  {
+    "name": "AI tech hype",
+    "input": {
+      "headline": "ChatGPT will transform everything — the truth about artificial intelligence",
+      "snippet": "Everyone knows machine learning is undeniably changing the world. No doubt about it."
+    },
+    "expect": {
+      "nudgemeter_score": { "min": 10, "max": 45 },
+      "nudge_profile": {
+        "ai_tech": { "min": 15 }
+      }
+    }
+  },
+  {
+    "name": "productivity hustle",
+    "input": {
+      "headline": "5 morning habits that guarantee success — join now",
+      "snippet": "If you care about your future, act now. Millions agree this is proven to work."
+    },
+    "expect": {
+      "nudgemeter_score": { "min": 10, "max": 45 },
+      "nudge_profile": {
+        "productivity": { "min": 10 }
+      }
+    }
+  },
+  {
+    "name": "consumerism / engagement bait",
+    "input": {
+      "headline": "Limited sale: must-have products before they sell out",
+      "snippet": "Like and share this deal. Comment below and tag someone. Subscribe now for exclusive offers."
+    },
+    "expect": {
+      "nudgemeter_score": { "min": 8, "max": 40 },
+      "nudge_profile": {
+        "consumerism": { "min": 10 }
+      }
+    }
+  },
+  {
+    "name": "entertainment / celebrity drama",
+    "input": {
+      "headline": "Shocking celebrity drama goes viral — you won't believe what happened",
+      "snippet": "Everyone is talking about this trending gossip. The whole internet is obsessed with this famous star."
+    },
+    "expect": {
+      "nudgemeter_score": { "min": 10, "max": 45 },
+      "nudge_profile": {
+        "entertainment": { "min": 15 }
+      }
+    }
+  },
+  {
+    "name": "vague sourcing only",
     "input": {
       "headline": "Experts say major change is coming",
-      "snippet": "Many believe this proves the trend."
+      "snippet": "Many believe this proves the trend. Sources say it is believed to be significant."
     },
     "expect": {
-      "min": 12,
-      "max": 35
-    }
-  },
-  {
-    "name": "engagement bait",
-    "input": {
-      "headline": "Like and share this now",
-      "snippet": "Comment below and tag someone."
-    },
-    "expect": {
-      "min": 4,
-      "max": 20
+      "nudgemeter_score": { "min": 5, "max": 30 }
     }
   },
   {
     "name": "us-vs-them framing",
     "input": {
-      "headline": "Us vs them: real patriots must act",
-      "snippet": "The elites and traitors are winning."
+      "headline": "Real patriots must act — us vs them, pick a side",
+      "snippet": "The elites and traitors are winning. Leftists are destroying everything we stand for."
     },
     "expect": {
-      "min": 12,
-      "max": 35
+      "nudgemeter_score": { "min": 12, "max": 45 },
+      "nudge_profile": {
+        "politics": { "min": 10 },
+        "outrage":  { "min": 10 }
+      }
     }
   },
   {
     "name": "academic neutral writing",
     "input": {
-      "headline": "Study evaluates rainfall variability",
-      "snippet": "The authors compare datasets and discuss confidence intervals and limitations."
+      "headline": "Study evaluates rainfall variability across three decades",
+      "snippet": "The authors compare datasets and discuss confidence intervals, limitations, and implications for future research."
     },
-    "expect": {
-      "min": 0,
-      "max": 12
-    }
-  },
-  {
-    "name": "short text uncertainty",
-    "input": {
-      "headline": "Breaking update",
-      "snippet": "More soon."
-    },
-    "expect": {
-      "min": 0,
-      "max": 20
-    }
+    "expect": { "nudgemeter_score": { "min": 0, "max": 12 } }
   },
   {
     "name": "all-caps urgency",
@@ -104,9 +157,14 @@
       "headline": "ACT NOW BEFORE IT IS TOO LATE",
       "snippet": "DO THIS IMMEDIATELY OR FACE CONSEQUENCES"
     },
-    "expect": {
-      "min": 5,
-      "max": 20
-    }
+    "expect": { "nudgemeter_score": { "min": 5, "max": 25 } }
+  },
+  {
+    "name": "short text — low confidence",
+    "input": {
+      "headline": "Breaking update",
+      "snippet": "More soon."
+    },
+    "expect": { "nudgemeter_score": { "min": 0, "max": 20 } }
   }
 ]

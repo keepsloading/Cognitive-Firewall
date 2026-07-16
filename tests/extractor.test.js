@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert');
 const { JSDOM } = require('jsdom');
-const { rankReadableCandidates } = require('../boundier-extension/extractor.js');
+const { rankReadableCandidates } = require('../nudgement-extension/extractor.js');
 
 function extract(html) {
   const dom = new JSDOM(html, { pretendToBeVisual: true });

@@ -1,11 +1,11 @@
 {
-    "name": "boundier",
-    "private": true,
-    "scripts": {
-      "test": "node --test tests"
-    },
-    "devDependencies": {
-      "@mozilla/readability": "^0.6.0",
-      "jsdom": "^29.1.1"
-    }
+  "name": "nudgement",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests"
+  },
+  "devDependencies": {
+    "@mozilla/readability": "^0.6.0",
+    "jsdom": "^29.1.1"
   }
+}

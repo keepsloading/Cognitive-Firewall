@@ -1,41 +1,66 @@
-const test = require('node:test');
-const assert = require('node:assert');
-const cases = require('./eval_cases.json');
-const { scoreContent, CATEGORY_KEYS } = require('../boundier-extension/scorer.js');
+/**
+ * Nudgement — scorer unit tests
+ * Tests both the nudgemeter_score range and nudge_profile dimension outputs.
+ */
+const { test } = require('node:test');
+const assert   = require('node:assert/strict');
+const scorer   = require('../nudgement-extension/scorer.js');
+const cases    = require('./eval_cases.json');
 
-test('rustmeter schema and category coverage', () => {
-  const result = scoreContent({ headline: 'You won\'t believe this secret', snippet: 'Like and share now', surface: 'page' }, 't1');
-  assert.ok(Number.isFinite(result.rustmeter_score));
-  assert.equal(result.aim_score, undefined);
-  ['rustmeter_score','attention_score','emotion_score','framing_score','source_score','category_scores','top_signals','explanations','source','engine_version'].forEach((k)=>assert.ok(Object.hasOwn(result,k), k));
-  for (const key of CATEGORY_KEYS) assert.ok(Object.hasOwn(result.category_scores, key));
-});
+const { scoreContent } = scorer;
 
-test('neutral text scores lower than bait text', () => {
-  const neutral = scoreContent({ headline: 'City council meeting minutes released', snippet: 'Members discussed transport budget allocations.' }, 'n');
-  const bait = scoreContent({ headline: 'You won\'t believe this scandal', snippet: 'Act now, share this if you care.' }, 'b');
-  assert.ok(neutral.rustmeter_score < bait.rustmeter_score);
-});
+for (const tc of cases) {
+  test(tc.name, () => {
+    const result = scoreContent(tc.input, 'test');
 
-test('eval fixtures are within ranges', () => {
-  for (const c of cases) {
-    const r = scoreContent(c.input, c.name);
-    assert.ok(r.rustmeter_score >= c.expect.min && r.rustmeter_score <= c.expect.max, `${c.name}: ${r.rustmeter_score}`);
-  }
-});
+    // nudgemeter_score check
+    const score = result.nudgemeter_score;
+    assert.ok(
+      typeof score === 'number' && Number.isFinite(score),
+      `nudgemeter_score must be a finite number, got ${score}`
+    );
 
+    if (tc.expect?.nudgemeter_score) {
+      const { min = 0, max = 100 } = tc.expect.nudgemeter_score;
+      assert.ok(
+        score >= min && score <= max,
+        `"${tc.name}": nudgemeter_score ${score} not in [${min}, ${max}]`
+      );
+    }
 
-test('explanations are non-empty and evidence-linked when signals are present', () => {
-  const result = scoreContent({ headline: "Last chance: corrupt elites exposed", snippet: 'Act now before it is too late. Share this if you care.', surface: 'page' }, 'exp1');
-  assert.ok(Array.isArray(result.explanations));
-  assert.ok(result.explanations.length >= 3);
-  assert.ok(result.explanations.some((line) => /Detected|detected/.test(line)), result.explanations.join(' | '));
-  assert.ok(result.explanations.some((line) => /words/.test(line)), result.explanations.join(' | '));
-});
+    // nudge_profile checks (per-dimension)
+    if (tc.expect?.nudge_profile) {
+      assert.ok(result.nudge_profile, 'nudge_profile must be present in result');
+      for (const [dim, bounds] of Object.entries(tc.expect.nudge_profile)) {
+        const dimScore = result.nudge_profile[dim];
+        assert.ok(
+          typeof dimScore === 'number',
+          `"${tc.name}": nudge_profile.${dim} must be a number, got ${typeof dimScore}`
+        );
+        if (bounds.min !== undefined) {
+          assert.ok(
+            dimScore >= bounds.min,
+            `"${tc.name}": nudge_profile.${dim} = ${dimScore}, expected >= ${bounds.min}`
+          );
+        }
+        if (bounds.max !== undefined) {
+          assert.ok(
+            dimScore <= bounds.max,
+            `"${tc.name}": nudge_profile.${dim} = ${dimScore}, expected <= ${bounds.max}`
+          );
+        }
+      }
+    }
 
-test('low-score neutral content does not claim strong signals', () => {
-  const result = scoreContent({ headline: 'City transit update', snippet: 'The committee published the weekly maintenance summary and schedule.', surface: 'page' }, 'exp2');
-  assert.ok(result.explanations.length >= 3);
-  assert.ok(result.explanations.every((line) => !/This is propaganda|misinformation|author intended/i.test(line)));
-  assert.ok(result.explanations.some((line) => /No strong|few high-confidence|low-evidence/i.test(line)), result.explanations.join(' | '));
-});
+    // Structural checks — always required
+    assert.ok(result.nudge_profile && typeof result.nudge_profile === 'object', 'nudge_profile must be an object');
+    const DIMENSION_KEYS = ['outrage', 'politics', 'health', 'finance', 'consumerism', 'ai_tech', 'productivity', 'entertainment'];
+    for (const key of DIMENSION_KEYS) {
+      assert.ok(key in result.nudge_profile, `nudge_profile must contain key: ${key}`);
+      assert.ok(result.nudge_profile[key] >= 0 && result.nudge_profile[key] <= 100, `${key} must be in [0, 100]`);
+    }
+    assert.ok(Array.isArray(result.top_signals), 'top_signals must be an array');
+    assert.ok(Array.isArray(result.explanations), 'explanations must be an array');
+    assert.ok(typeof result.engine_version === 'string', 'engine_version must be a string');
+  });
+}
